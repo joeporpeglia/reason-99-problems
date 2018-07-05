@@ -1,5 +1,3 @@
-[%%debugger.chrome];
-
 open Belt;
 open Solutions;
 

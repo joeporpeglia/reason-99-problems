@@ -105,7 +105,7 @@ module P11 = {
     | One('a)
     | Many((int, 'a));
 
-  let encodeModified = items =>
+  let encode = items =>
     List.map(P9.pack(items), group =>
       switch (group) {
       | [] => raise(Invalid_argument("A packed group should not be empty"))
@@ -123,4 +123,34 @@ module P12 = {
     | [P11.Many((count, char)), ...rest] =>
       List.concat(List.make(count, char), decode(rest))
     };
+};
+
+module P13 = {
+  type rle('a) =
+    | One('a)
+    | Many((int, 'a));
+
+  let encodeGroup = ((count, char) as group) =>
+    count > 1 ? Many(group) : One(char);
+
+  let encode = chars => {
+    let rec encode = (group, groups, chars) => {
+      let (count, char) = group;
+      switch (chars) {
+      | [] => [encodeGroup(group), ...groups]
+      | [head, ...tail] =>
+        head == char ?
+          encode((count + 1, char), groups, tail) :
+          encode((1, head), [encodeGroup(group), ...groups], tail)
+      };
+    };
+
+    let result = switch (chars) {
+    | [] => []
+    | [head, ...tail] => P5.rev(encode((1, head), [], tail))
+    };
+
+    Js.log(result);
+    result;
+  };
 };

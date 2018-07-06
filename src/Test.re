@@ -95,7 +95,7 @@ let tests = [
   ),
   (
     "Problem 11.1",
-    P11.encodeModified([
+    P11.encode([
       "a",
       "a",
       "a",
@@ -131,6 +131,33 @@ let tests = [
       P11.Many((4, "e")),
     ])
     == ["a", "a", "a", "a", "b", "c", "c", "a", "a", "d", "e", "e", "e", "e"],
+  ),
+  (
+    "Problem 13.1",
+    P13.encode([
+      "a",
+      "a",
+      "a",
+      "a",
+      "b",
+      "c",
+      "c",
+      "a",
+      "a",
+      "d",
+      "e",
+      "e",
+      "e",
+      "e",
+    ])
+    == [
+         P13.Many((4, "a")),
+         P13.One("b"),
+         P13.Many((2, "c")),
+         P13.Many((2, "a")),
+         P13.One("d"),
+         P13.Many((4, "e")),
+       ],
   ),
 ];
 

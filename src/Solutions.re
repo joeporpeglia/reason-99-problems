@@ -37,7 +37,7 @@ module P5 = {
 };
 
 module P6 = {
-  let isPalindrome = chars => chars == P5.rev(chars);
+  let isPalindrome = chars => chars == List.reverse(chars);
 };
 
 module P7 = {
@@ -67,7 +67,7 @@ module P8 = {
 
     switch (items) {
     | [] => []
-    | [head, ...tail] => P5.rev(compress(head, [head], tail))
+    | [head, ...tail] => List.reverse(compress(head, [head], tail))
     };
   };
 };
@@ -85,7 +85,7 @@ module P9 = {
 
     switch (items) {
     | [] => []
-    | [head, ...tail] => P5.rev(pack([head], [], tail))
+    | [head, ...tail] => List.reverse(pack([head], [], tail))
     };
   };
 };
@@ -145,12 +145,113 @@ module P13 = {
       };
     };
 
-    let result = switch (chars) {
+    switch (chars) {
     | [] => []
-    | [head, ...tail] => P5.rev(encode((1, head), [], tail))
+    | [head, ...tail] => List.reverse(encode((1, head), [], tail))
     };
-
-    Js.log(result);
-    result;
   };
+};
+
+module P14 = {
+  let rec duplicate = chars =>
+    switch (chars) {
+    | [] => []
+    | [head, ...tail] => [head, head, ...duplicate(tail)]
+    };
+};
+
+module P15 = {
+  let rec replicate = (chars, times) =>
+    switch (chars) {
+    | [] => []
+    | [head, ...tail] =>
+      List.concat(List.make(times, head), replicate(tail, times))
+    };
+};
+
+module P16 = {
+  let drop = (chars, skipIndex) => {
+    let rec drop = (chars, cursor) =>
+      switch (chars) {
+      | [] => []
+      | [head, ...tail] =>
+        cursor == skipIndex ?
+          drop(tail, 1) : [head, ...drop(tail, cursor + 1)]
+      };
+
+    drop(chars, 1);
+  };
+};
+
+module P17 = {
+  let split = (chars, size) => {
+    let rec shift = (destination, source, size) =>
+      switch (source) {
+      | [] => (List.reverse(destination), [])
+      | [head, ...tail] =>
+        size == 1 ?
+          (List.reverse([head, ...destination]), tail) :
+          shift([head, ...destination], tail, size - 1)
+      };
+
+    shift([], chars, size);
+  };
+};
+
+module P18 = {
+  let rec slice = (chars, start, stop) => {
+    let rec shift = (destination, source, size) =>
+      switch (source) {
+      | [] => List.reverse(destination)
+      | [head, ...tail] =>
+        size == 1 ?
+          List.reverse(destination) :
+          shift([head, ...destination], tail, size - 1)
+      };
+
+    switch (chars) {
+    | [] => []
+    | [_, ...tail] =>
+      start == 0 ?
+        shift([], chars, stop - start) : slice(tail, start - 1, stop)
+    };
+  };
+};
+
+module P19 = {
+  let rotate = (chars, dist) => {
+    let rec shift = (shifted, remaining, count) =>
+      switch (count) {
+      | 0 => List.concat(remaining, List.reverse(shifted))
+      | _ =>
+        switch (remaining) {
+        | [] => shift([], shifted, count - 1)
+        | [head, ...tail] => shift([head, ...shifted], tail, count - 1)
+        }
+      };
+
+    let dist =
+      if (dist < 0) {
+        List.length(chars) + dist;
+      } else {
+        dist;
+      };
+
+    switch (chars) {
+    | [] => []
+    | _ => shift([], chars, dist)
+    };
+  };
+};
+
+module P20 = {
+  let rec removeAt = (index, chars) =>
+    switch (chars) {
+    | [] => []
+    | [head, ...tail] =>
+      switch (index) {
+      | 0 => tail
+      | _ => [head, ...removeAt(index - 1, tail)]
+      }
+    };
 };
